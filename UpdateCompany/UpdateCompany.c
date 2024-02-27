@@ -1,8 +1,8 @@
 /*----------------------------------------------------------------------------
 	Program : UpdateCompany.c
 	Author  : Tom Stevelt
-	Date    : read company info file from IEX Cloud.  Update Sector and Industry
-	Synopsis: 
+	Date    : July 2017
+	Synopsis: Read company info file from IEX Cloud.  Update Sector and Industry
 	Return  : 
 
 	Who		Date		Modification
