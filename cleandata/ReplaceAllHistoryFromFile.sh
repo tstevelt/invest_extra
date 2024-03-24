@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 #     Invest extras
 # 
 #     Copyright (C)  2019 - 2024 Tom Stevelt
@@ -16,30 +16,22 @@
 #     You should have received a copy of the GNU Affero General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+if [ "$1" = '' ]
+then
+	echo " ReplaceAllHistoryFromFile.sh FILE"
+	exit 1
+fi
 
-#echo "select Sticker from stock where Slast is NULL ;" | mysql -D invest
+FILE=$1
 
-#getdata -null -fmt csv -2yr
+if [ ! -f $FILE ]
+then
+	echo "$FILE not found"
+	exit 1
+fi
 
-# if you don't have a list of ticker from IndexRecon or the sql above, then
-# make a list with this sql.
-
-#echo "select Sticker from stock where (select count(*) from average where Aticker = Sticker) = 0 ;" | mysql -D invest > ticker.txt
-#vi ticker.txt
-
-for ticker in `cat ticker.txt`
+for i in `awk '{print $1}' < $FILE`
 do
-	UpdateAverage -ticker $ticker A
+	ReplaceAllHistory.sh $i
 done
-
-echo "Updating stock Slast and 52 week high ..."
-mysql -D invest < /home/tms/src/invest/sql/FixSlast.sql
-
-echo "Updating UpdateMarket ..."
-DATE=`date +%Y-%m-%d`
-/usr/local/bin/UpdateMarket -market $DATE
-
-cd ../UpdateCompany
-GetCompanies.sh -generate
-UpdateCompany Companies.dat
 

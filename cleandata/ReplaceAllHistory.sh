@@ -29,7 +29,7 @@ echo "delete from average where Aticker = '$TICKER';"           >> script
 echo "update stock set Slast = NULL where Sticker = '$TICKER';" >> script
 mysql -D invest < script
 
-getdata -one $TICKER -2yr -slast
+getdata -one $TICKER -3yr -slast
 
 UpdateAverage -ticker $TICKER A
 
