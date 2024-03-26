@@ -1,0 +1,5 @@
+select Hdate, Hclose from history where Hticker = 'VIX' 
+and Hdate = (select max(Hdate) from history where Hticker = 'VIX') into @DATE, @CLOSE;
+select Ama10 from average where Aticker = 'VIX' and Adate = @DATE into @AMA10 ;
+select @DATE, @CLOSE, @AMA10;
+select 'Ama10', if ( @CLOSE < @AMA10, 'RISK ON', 'RISK OFF' );
