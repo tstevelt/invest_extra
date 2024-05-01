@@ -217,6 +217,8 @@ if ( strcmp ( tokens[TOK_SYMBOL], "WBA" ) ==  0 )
 				continue;
 			}
 
+			sprintf ( WhereClause, "Pmember = %ld and Pticker = '%s'", xmember.xid, tokens[TOK_SYMBOL] );
+
 			if ( LoadPortfolio ( &MySql, WhereClause, &xportfolio, 0 ) != 1 )
 			{
 				printf ( "*** ERROR CANNOT RELOAD NEWLY ADDED PORTFOLO RECORD ***\n" );
