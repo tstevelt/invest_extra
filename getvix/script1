@@ -1,9 +1,0 @@
-select count(*) from history where Hticker = 'VIX';
-load data local infile 'x1.csv'
-into table history
-fields terminated by ',' lines terminated by '\n' 
-(Hticker, @Var_Hdate, Hopen, Hhigh, Hlow, Hclose )
-set Hdate = str_to_date(@Var_Hdate,'%m/%d/%Y') ;
-show warnings ;
-update stock set Slast = (select max(Hdate) from history where Hticker = 'VIX') where Sticker = 'VIX';
-select count(*) from history where Hticker = 'VIX';

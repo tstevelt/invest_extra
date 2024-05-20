@@ -16,6 +16,8 @@
 #     You should have received a copy of the GNU Affero General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+VERBOSE=N
+
 if [ "$1" = '' ]
 then
 	DEST='cat'
@@ -60,18 +62,12 @@ fi
 
 diff -e VIX.csv.prev VIX.csv | grep , | sed 's/^/VIX,/'  > x1.csv
 
-#  123456789-123456789-123456789-123456789-123456789-123456789-123456789-
-#  VIX,01/16/2024,14.120000,14.350000,13.520000,13.840000
-
 rm -f script1 script2
 
-# echo "delete from history where Hticker = 'VIX';" >> script1
-# echo "delete from average where Aticker = 'VIX';" >> script1
-
-# echo "delete from history where Hticker = 'VIX' and Hdate = '2024-01-17';" >> script1
-# echo "delete from average where Aticker = 'VIX' and Adate = '2024-01-17';" >> script1
-
-echo "select count(*) from history where Hticker = 'VIX';" >> script1
+if [ $VERBOSE = Y ]
+then
+	echo "select count(*) from history where Hticker = 'VIX';" >> script1
+fi
 
 echo "load data local infile 'x1.csv'" >> script1
 echo "into table history" >> script1
@@ -79,31 +75,40 @@ echo "fields terminated by ',' lines terminated by '\n' " >> script1
 echo "(Hticker, @Var_Hdate, Hopen, Hhigh, Hlow, Hclose )" >> script1
 echo "set Hdate = str_to_date(@Var_Hdate,'%m/%d/%Y') ;" >> script1
 
-echo "show warnings ;" >> script1
+if [ $VERBOSE = Y ]
+then
+	echo "show warnings ;" >> script1
+fi
+
 echo "update stock set Slast = (select max(Hdate) from history where Hticker = 'VIX') where Sticker = 'VIX';" >> script1
 
-echo "select count(*) from history where Hticker = 'VIX';" >> script1
+if [ $VERBOSE = Y ]
+then
+	echo "select count(*) from history where Hticker = 'VIX';" >> script1
+fi
 
 mysql -D invest < script1 >> $FILE
 
-mv VIX.csv VIX.csv.prev
-
-UpdateAverage -ticker VIX Z >> $FILE
+if [ $VERBOSE = Y ]
+then
+	UpdateAverage -ticker VIX Z >> $FILE
+else
+	UpdateAverage -ticker VIX Z > /dev/null
+fi
 
 echo "select Hdate, Hclose from history where Hticker = 'VIX' " > script2
-echo "and Hdate = (select max(Hdate) from history where Hticker = 'VIX') into @DATE, @CLOSE;" >> script2
+echo " and Hdate = (select max(Hdate) from history where Hticker = 'VIX') into @DATE, @CLOSE;" >> script2
 echo "select Ama10 from average where Aticker = 'VIX' and Adate = @DATE into @AMA10 ;" >> script2
-echo "select @DATE, @CLOSE, @AMA10;" >> script2
+if [ $VERBOSE = Y ]
+then
+	echo "select @DATE, @CLOSE, @AMA10;" >> script2
+fi
 echo "select 'Ama10', if ( @CLOSE < @AMA10, 'RISK ON', 'RISK OFF' );" >> script2
 
 mysql -D invest < script2 >> $FILE
 
-
-# MariaDB [invest]> select max(Hdate) from history where Hticker = 'VIX' into @DATE;
-# MariaDB [invest]> select max(Hdate) from history where Hticker = 'VIX' and Hdate < @DATE into @PREV;
-# MariaDB [invest]> select @DATE, @PREV;
+mv VIX.csv VIX.csv.prev
 
 SendFile
-
 
 
