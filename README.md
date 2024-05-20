@@ -101,17 +101,6 @@ USAGE: WatchlistAlertRT -member id [-d]
 -d - debug, no SMS
 ```
 ---------------------------------------------------------------------------
-cleandata Check database for weird data.
-```
-USAGE: cleandata -stock  date [-d]
-   Deletes stocks and history where Slast < date (if not in portfolio)
-USAGE: cleandata -history {equal|less} date [-d]
-   Deletes history and average records
-USAGE: cleandata -report {all | TICKER} date [-d]
-   date = history should be loaded up to and including this date.
-format date as yyyy-mm-dd
-```
----------------------------------------------------------------------------
 est_target Given total value, rmd required (7 year), cash req (6 mo)
 ```
 
@@ -173,19 +162,6 @@ USAGE: getnews -ticker TICKER hours [-d#]
 -ticker = one stock
 hours   = number of hours since last retrieved
 -d  = debug
-```
----------------------------------------------------------------------------
-getsplits Scan stock history for price jumps, verify with IEX /splits/
-```
-USAGE: getsplits -all           days [-d#]
-USAGE: getsplits -active        days [-d#]
-USAGE: getsplits -ticker TICKER days [-d#]
--all    = all stocks
--active = stocks in portfolios
--ticker = one stock
-days    = number of days ago to compare 10 day averages
--d1  = debug
--d2  = debug, more verbose
 ```
 ---------------------------------------------------------------------------
 rpt_advance_decline For stocks in selected index, count advanced and declined
