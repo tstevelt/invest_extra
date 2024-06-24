@@ -39,8 +39,6 @@ int main ( int argc, char *argv[] )
 
 	getargs ( argc, argv );
 
-	GetInvestCfg ( 0 );
-
 	StartMySQL ( &MySql, "invest" );
 
 	sprintf ( WhereClause, "member.id = %ld", ReportMember );

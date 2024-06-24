@@ -47,7 +47,7 @@ mysql < x1.sql
 getYAHOO $FILE > x1.sql
 mysql < x1.sql
 
-# rm -f $FILE x1.sql
+rm -f $FILE x1.sql
 
 UpdateAverage -ticker $TICKER A
 

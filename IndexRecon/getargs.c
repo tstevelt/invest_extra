@@ -74,6 +74,7 @@ void getargs ( int argc, char *argv[] )
 
 	if (( ifp = fopen ( argv[3], "r" )) == NULL )
 	{
+		printf ( "\nFILE NOT FOUND\n\n" );
 		MyUsage ();
 	}
 
@@ -81,7 +82,9 @@ void getargs ( int argc, char *argv[] )
 	{
 		if ( strcmp ( argv[xa], "-add" ) == 0 )
 		{
-			AddNewStock = 1;
+			printf ( "IEX dead, at this time cannot add new stocks\n" );
+			continue;
+			// AddNewStock = 1;
 		}
 		else if ( strcmp ( argv[xa], "-d" ) == 0 )
 		{
