@@ -7,6 +7,7 @@
 
 	Who		Date		Modification
 	---------------------------------------------------------------------
+	tms		06/25/2024	Added update Shigh52 and Sdate52.
 
 ----------------------------------------------------------------------------*/
 //     Invest extras
@@ -121,10 +122,19 @@ int main ( int argc, char *argv[] )
 		}
 
 		printf ( "%s;\n", Statement );
-
-		printf ( "update stock set Slast = (select max(Hdate) from history where Hticker = '%s') where Sticker = '%s';\n", xhistory.xhticker, xhistory.xhticker );
-
 	}
+
+	printf ( "update stock set Slast = (select max(Hdate) from history where Hticker = '%s') where Sticker = '%s';\n", xhistory.xhticker, xhistory.xhticker );
+
+
+	printf ( "select max(Hdate) from history where Hticker = '%s' into @DATE;\n", xhistory.xhticker );
+	printf ( "select @DATE;\n" );
+	printf ( "select date_sub(@DATE,interval 1 year) into @YEARAGO;\n" );
+	printf ( "select @YEARAGO ;\n" );
+	printf ( "select max(Hhigh) from history where Hticker = '%s' and Hdate > @YEARAGO into @HIGH52;\n", xhistory.xhticker );
+	printf ( "select @HIGH52 ;\n" );
+	printf ( "select Hdate from history where Hticker = '%s' and Hdate > @YEARAGO and Hhigh = @HIGH52 into @DATE52 ;\n", xhistory.xhticker );
+	printf ( "update stock set Shigh52 = @HIGH52, Sdate52 = @DATE52 where Sticker = '%s';\n", xhistory.xhticker );
 
 	fclose ( fp );
 
