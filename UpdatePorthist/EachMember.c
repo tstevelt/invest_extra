@@ -138,7 +138,8 @@ int EachMember ()
 		return ( 0 );
 	}
 
-	if ( TotalValue == 0.0 )
+	// if ( TotalValue == 0.0 )
+	if ( TotalInvest == 0.0 )
 	{
 		return ( 0 );
 	}
