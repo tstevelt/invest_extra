@@ -30,6 +30,9 @@
 #include <openssl/evp.h>
 #include <sys/types.h>
 
+#include <errno.h>
+#include <fcntl.h>
+
 #include	"shslib.h"
 
 #include	"dbylib.h"
@@ -66,7 +69,7 @@ TYPE	char	Today[12];
 TYPE	XPORTFOLIO	FilePortfolio;
 TYPE	char		ans;
 TYPE	char	strPurchaseDate[20];
-TYPE	char	strBroker[20];
+TYPE	char	strBroker[sizeof(xportfolio.xpbroker)+2];
 TYPE	DATEVAL	dvPurchaseDate;
 TYPE	char	strMaturityDate[20];
 TYPE	DATEVAL	dvMaturityDate;

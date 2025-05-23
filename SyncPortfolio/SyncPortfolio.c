@@ -7,12 +7,15 @@
 				server and sync'ed with this program.
 	Return  : 
 
+	Notes   : Inconsistent prompting between the three ProcessXXX() functions.
+
 	Who		Date		Modification
 	---------------------------------------------------------------------
 	tms		01/05/2023	Added Bond File vs Portfolio analysis. Still off
 						if there are duplicate bonds between IRA and TOD.
 	tms		01/04/2024	Added BROKER ID for Schwab
-	tms		02/08/024	Added IBKR
+	tms		02/08/2024	Added IBKR
+	tms		01/02/2025	Added 'Broker Account' and 'Security Type'
 
 ----------------------------------------------------------------------------*/
 //     Invest extras
@@ -37,16 +40,20 @@
 
 char GetValidChar ( char *ValidChars )
 {
-	char		answer;
+	char		answer[4];
 
-	answer = ' ';
+	answer[0] = ' ';
 
-	while ( strchr ( ValidChars, answer ) == (char *)0 )
+	while ( strchr ( ValidChars, answer[0] ) == (char *)0 )
 	{
-		answer = toupper(getc(stdin));
+		if ( fgets ( answer, sizeof(answer), stdin ) == NULL )
+		{
+			continue;
+		}
+		answer[0] = toupper(answer[0]);
 	}
 
-	return ( answer );
+	return ( answer[0] );
 }
 
 // fixit char GetAnswer ( char *Question, *ValidChars ) { }
@@ -102,6 +109,7 @@ int main ( int argc, char *argv[] )
 		if ( Array[ndx].OnFile == 0 )
 		{
 			printf ( "Remove %s from portfolio? [Y/N] ", Array[ndx].Ticker );
+			fflush  ( stdout );
 			ans = GetValidChar ( "YN" );
 			if ( ans == 'Y' )
 			{

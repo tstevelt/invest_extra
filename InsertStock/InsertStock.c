@@ -119,46 +119,6 @@ AAC=,NYS,UN,"NEW YORK STOCK EXCHANGE, INC.",Ares Acquisition Corporation - Units
 			{
 				continue;
 			}
-#ifdef MOVED_TO_LIBRARY
-			/*----------------------------------------------------------
-				only interested in certain types
-type 	refers to the common issue type
-ad - ADR
-re - REIT
-cs - Common Stock
-et - ETF
-
-ce - Closed end fund
-si - Secondary Issue
-lp - Limited Partnerships
-wt - Warrant
-oef - Open Ended Fund
-cef - Closed Ended Fund
-ps - Preferred Stock
-ut - Unit
-struct - Structured Product
-			----------------------------------------------------------*/
-			if ( nsStrcmp ( tokens[TOK_TYPE], "cs" ) == 0 )
-			{
-				xstock.xstype[0] = STYPE_STOCK;
-			}
-			else if ( nsStrcmp ( tokens[TOK_TYPE], "ad" ) == 0 )
-			{
-				xstock.xstype[0] = STYPE_ADR;
-			}
-			else if ( nsStrcmp ( tokens[TOK_TYPE], "et" ) == 0 )
-			{
-				xstock.xstype[0] = STYPE_ETF;
-			}
-			else if ( nsStrcmp ( tokens[TOK_TYPE], "re" ) == 0 )
-			{
-				xstock.xstype[0] = STYPE_REIT;
-			}
-			else
-			{
-				continue;
-			}
-#endif
 
 			xstock.xstype[0] = ReadStockType ( tokens[TOK_TYPE] );
 			if ( xstock.xstype[0] == STYPE_OTHER )

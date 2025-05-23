@@ -48,7 +48,7 @@ int main ( int argc, char *argv[] )
 		exit ( 1 );
 	}
 
-	sprintf ( WhereClause, "Pmember = %ld and Pticker = 'ENB'", ReportMember );
+	// sprintf ( WhereClause, "Pmember = %ld and Pticker = 'ENB'", ReportMember );
 	sprintf ( WhereClause, "Pmember = %ld", ReportMember );
 
 	LoadPortfolioCB ( &MySql, WhereClause, "Pticker", &xportfolio, (int(*)()) getdata, 1 );

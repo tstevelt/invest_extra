@@ -134,12 +134,11 @@ int EachMember ()
 
 	if ( Debug )
 	{
-		printf ( "Invest %.2f  Values %.2f  %.2f  %.2f\n", TotalInvest, EquityValue, BondValue, CashValue );
-		return ( 0 );
+		printf ( "Invest %.2f  Values %.2f  %.2f  %.2f Total %.2f\n", TotalInvest, EquityValue, BondValue, CashValue, TotalValue );
+		// return ( 0 );
 	}
 
-	// if ( TotalValue == 0.0 )
-	if ( TotalInvest == 0.0 )
+	if ( TotalValue == 0.0 )
 	{
 		return ( 0 );
 	}
@@ -152,6 +151,11 @@ int EachMember ()
 "insert into porthist (PHmember, PHdate, PHinvest, PHequity, PHbonds, PHcash) values ( %ld, '%s', %.2f, %.2f, %.2f, %.2f)",
 			xmember.xid, ascHistDate, TotalInvest, EquityValue, BondValue, CashValue  );
 		
+		if ( Debug )
+		{
+			printf ( "%s\n", Statement );
+		}
+
 		rv = dbyInsert ( "invest", &MySql, Statement, 0, LogFileName );
 		if ( rv == 0 )
 		{
@@ -168,6 +172,11 @@ int EachMember ()
 		sprintf ( Statement, 
 "update porthist set PHinvest = %.2f, PHequity = %.2f, PHbonds = %.2f, PHcash = %.2f where PHmember = %ld and PHdate = '%s'",
 			TotalInvest, EquityValue, BondValue, CashValue, xmember.xid, ascHistDate );
+
+		if ( Debug )
+		{
+			printf ( "%s\n", Statement );
+		}
 
 		rv = dbyUpdate ( "invest", &MySql, Statement, 0, LogFileName );
 		if ( rv == 0 )

@@ -48,7 +48,7 @@ int getdata ()
 		return ( 0 );
 	}
 
-	if ( xstock.xstype[0] != 'S' )
+	if ( xstock.xstype[0] != STYPE_STOCK ) // if ( xstock.xstype[0] != 'S' )
 	{
 		if ( Debug )
 		{
@@ -57,7 +57,7 @@ int getdata ()
 		return ( 0 );
 	}
 
-	if ( xstock.xslast == NULL || nsStrncmp ( xstock.xslast, "(null)", 6 ) == 0 )
+	if ( nsStrncmp ( xstock.xslast, "(null)", 6 ) == 0 )
 	{
 		printf ( "Stock %s does not have any history\n", xportfolio.xpticker );
 		return ( 0 );

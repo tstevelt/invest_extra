@@ -28,6 +28,9 @@ fi
 FILE=/var/local/tmp/GetVIX.txt
 rm -f $FILE
 
+#WORKDIR=/home/tms/src/invest_extra/getvix
+WORKDIR=/Users/tms/src/invest_extra/getvix
+
 SendFile ()
 {
 	if [ "$DEST" = 'cat' ]
@@ -41,7 +44,7 @@ SendFile ()
 
 echo "=== Getting VIX data `date` ===" >> $FILE
 
-cd /home/tms/src/invest_extra/getvix
+cd $WORKDIR
 
 if [ ! -f VIX.csv.prev ]
 then

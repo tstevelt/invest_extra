@@ -155,7 +155,7 @@ XLY,5.000,175.679,891.630,13.230
 			/*----------------------------------------------------------
 				purchase date?
 			----------------------------------------------------------*/
-			printf ( "purchase date, yyyy-mm-dd " );
+			printf ( "purchase date [yyyy-mm-dd] " );
 
 			memset ( strPurchaseDate, 'x', sizeof(strPurchaseDate) );
 			while ( StrToDatevalFmt ( strPurchaseDate, DATEFMT_YYYY_MM_DD, &dvPurchaseDate ) != 0 )
@@ -287,7 +287,7 @@ XLY,5.000,175.679,891.630,13.230
 			}
 		}
 
-		if ( xstock.xstype[0] == 'B' )
+		if ( xstock.xstype[0] == STYPE_BOND )
 		{
 			BondValueFile      += nsAtof(tokens[TOK_CURR]) ;
 			BondValuePortfolio += xportfolio.xpshares * 1000.0;

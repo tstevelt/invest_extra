@@ -314,7 +314,7 @@ int EachStock ( XSTOCK *ptr )
 			FragCount++;
 		}
 
-		if ( ptr->xstype[0] != 'E' )
+		if ( ptr->xstype[0] != STYPE_ETF ) // if ( ptr->xstype[0] != 'E' )
 		{
 			// EnterpriseValue = MarketCap + MinorityInterest + LongTermDebtNoncurrent + OperatingLeaseLiabilityCurrent + 
 			//                   AccountsPayableCurrent - CashEquiv

@@ -175,7 +175,7 @@ printf ( "\n" );
 			/*----------------------------------------------------------
 				purchase date?
 			----------------------------------------------------------*/
-			printf ( "purchase date, yyyy-mm-dd " );
+			printf ( "purchase date [yyyy-mm-dd] " );
 
 			memset ( strPurchaseDate, 'x', sizeof(strPurchaseDate) );
 			while ( StrToDatevalFmt ( strPurchaseDate, DATEFMT_YYYY_MM_DD, &dvPurchaseDate ) != 0 )
@@ -307,7 +307,7 @@ printf ( "\n" );
 			}
 		}
 
-		if ( xstock.xstype[0] == 'B' )
+		if ( xstock.xstype[0] == STYPE_BOND )
 		{
 			BondValueFile      += nsAtof(tokens[TOK_CURR]) ;
 			BondValuePortfolio += xportfolio.xpshares * 1000.0;

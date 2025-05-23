@@ -30,7 +30,17 @@ void Init ()
 
 	if ( ascHistDate[0] == '\0' )
 	{
-		sprintf ( Statement, "select max(Hdate) from history" ); 
+		DATEVAL		Today;
+
+		CurrentDateval ( &Today );
+
+		sprintf ( Statement, "select max(Hdate) from history where Hdate < '%04d-%02d-%02d'", 
+			Today.year4, Today.month, Today.day ); 
+
+		if ( Debug )
+		{
+			printf ( "%s\n", Statement );
+		}
 
 		Query = dbySelect ( "invest", &MySql, Statement, LogFileName );
 

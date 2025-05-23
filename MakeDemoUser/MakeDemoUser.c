@@ -81,10 +81,11 @@ static int EachStock ()
 		return ( 1 );
 	}
 
-	sprintf ( StockArray[StockCount].Ticker, xstock.xsticker );
+	sprintf ( StockArray[StockCount].Ticker, "%s", xstock.xsticker );
 	StockArray[StockCount].Random = rand ( ) / (double) RAND_MAX ;
+
+printf ( "%12.8f %s\n", StockArray[StockCount].Random,  StockArray[StockCount].Ticker );
 	StockCount++;
-	
 	return ( 0 );
 }
 
@@ -103,14 +104,18 @@ int main ( int argc, char *argv[] )
 
 	if ( argc < 2 )
 	{
-		printf ( "USAGE: MakeDemoUser S|E\n" );
+		printf ( "USAGE: MakeDemoUser S|E|P\n" );
+		printf ( "Demo user is %d, existing portfolio will be deleted\n", DEMO_MEMBER );
 		exit ( 0 );
 	}
-
+	
 	switch ( StockType = toupper ( argv[1][0] ))
 	{
 		case 'S':
 		case 'E':
+			fprintf ( stderr, "IEX dead\n" );
+			exit ( 1 );
+		case 'P':
 			break;
 		default:
 			exit ( 0 );
@@ -136,8 +141,8 @@ int main ( int argc, char *argv[] )
 		sprintf ( OneYear, "%04d-%02d-%02d", dvOneYear.year4, dvOneYear.month, dvOneYear.day );
 
 		sprintf ( Statement, "insert into member \
-				   ( id, Mname, Memail, Mpassword, Mstatus, Mrole, Mipaddr, Minsdt, Msuborig, Msubstart, Msubpaid, Msubexpire) \
-			values ( '%d', 'Demo', 'demo@silverhammersoftware.com', '%s',  '%c', '%c', '%s', '%s', '%s', '%s', 1.0, '%s')",
+( id, Mname, Memail, Mpassword, Mstatus, Mrole, Mipaddr, Minsdt, Msuborig, Msubstart, Msubpaid, Msubexpire) \
+values ( %d, 'Demo', 'demo@silverhammersoftware.com', '%s',  '%c', '%c', '%s', '%s', '%s', '%s', 1.0, '%s')",
 			DEMO_MEMBER,
 			pw_sha_make_pw ( (unsigned char *)"demo" ),
 			STATUS_VERIFIED,
@@ -148,6 +153,7 @@ int main ( int argc, char *argv[] )
 			Today,
 			OneYear );
 
+printf ( "%s\n", Statement );
 
 		if (( rv = dbyInsert ( "invest", &MySql, Statement, 0, LogFileName )) != 1 )
 		{
@@ -174,15 +180,19 @@ int main ( int argc, char *argv[] )
 	/*----------------------------------------------------------
 		Load Stocks
 	----------------------------------------------------------*/
-	if ( StockType == 'S' )
+	switch ( StockType )
 	{
-		sprintf ( WhereClause, "Srussell = '1'" );
-		//sprintf ( WhereClause, "Ssp500 = 'Y'" );
+		case 'S':
+			sprintf ( WhereClause, "Srussell = '1'" );
+			break;
+		case 'E':
+			sprintf ( WhereClause, "Stype = 'E'" );
+			break;
+		case 'P':
+			sprintf ( WhereClause, "Sticker in (select Pticker from portfolio) and Stype in ('S','E')" );
+			break;
 	}
-	else
-	{
-		sprintf ( WhereClause, "Stype = 'E'" );
-	}
+
 	LoadStockCB ( &MySql, WhereClause, NULL, &xstock, (int(*)()) EachStock, 0 );
 
 	printf ( "Loaded %d stocks\n", StockCount );
@@ -194,7 +204,7 @@ int main ( int argc, char *argv[] )
 		dates, but with realistic prices.
 	----------------------------------------------------------*/
 	Inserted = 0;
-	for ( ndx = 0; ndx < 10 && ndx < StockCount; ndx++ )
+	for ( ndx = 0; ndx < StockCount * 0.75 && ndx < StockCount; ndx++ )
 	{
 		for ( tries = 0; tries < 10; tries++ )
 		{
@@ -264,7 +274,7 @@ int main ( int argc, char *argv[] )
 		make watchlist of random stocks
 	----------------------------------------------------------*/
 	Inserted = 0;
-	for ( ; ndx < 20 && ndx < StockCount; ndx++ )
+	for ( ;  ndx < StockCount; ndx++ )
 	{
 		sprintf ( Statement, "insert into watchlist ( Wmember, Wticker, Walerttype ) \
 						values ( '%d', '%s', '%c' )",

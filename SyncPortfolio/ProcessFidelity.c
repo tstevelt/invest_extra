@@ -110,6 +110,7 @@ printf ( "\n" );
 			printf ( "%s %s not in stock table\n", tokens[TOK_SYMBOL], tokens[TOK_DESC] );
 
 			printf ( "Do you want to add stock? [Y/N] " );
+			fflush ( stdout );
 			ans = GetValidChar ( "YN" );
 			if ( ans == 'N' )
 			{
@@ -117,6 +118,10 @@ printf ( "\n" );
 			}
 
 			printf ( "Type: S)tock A)dr R)eit P)refer E)tf B)ond C)ash " );
+			fflush ( stdout );
+			/*----------------------------------------------------------
+				not using STYPE_FX, STYPE_OTHER, STYPE_CRYPTO or STYPE_INDEX
+			----------------------------------------------------------*/
 			xstock.xstype[0] = GetValidChar ( "SARPEBC" );
 
 			sprintf ( Statement,
@@ -150,24 +155,67 @@ printf ( "\n" );
 		sprintf ( WhereClause, "Pmember = %ld and Pbroker like '%s%%' and Pticker = '%s'", 
 					xmember.xid, BrokerID, tokens[TOK_SYMBOL] );
 
-if ( strcmp ( tokens[TOK_SYMBOL], "WBA" ) ==  0 )
-{
-	printf ( "kilroy was here\n" );
-}
+//if ( strcmp ( tokens[TOK_SYMBOL], "WBA" ) ==  0 )
+//{
+//	printf ( "kilroy was here\n" );
+//}
 
-		if ( LoadPortfolio ( &MySql, WhereClause, &xportfolio, 0 ) != 1 )
+		if (( rv = LoadPortfolio ( &MySql, WhereClause, &xportfolio, 0 )) != 1 )
 		{
+			if ( rv > 1 )
+			{
+				printf ( "ERROR: %s %s is in portfolio %s\n", tokens[TOK_SYMBOL], tokens[TOK_DESC], BrokerID  );
+				continue;
+			}
+
 			printf ( "%s %s not in %s portfolio\n", tokens[TOK_SYMBOL], tokens[TOK_DESC], BrokerID  );
 
 			printf ( "Do you want to add to portfolio? [Y/N] " );
+			fflush ( stdout );
 			ans = GetValidChar ( "YN" );
 			if ( ans == 'N' )
 			{
 				continue;
 			}
 
+			printf ( "security type, bucket, (C|F|E) " );
+			fflush ( stdout );
+			ans = GetValidChar ( "CFE" );
+			switch ( ans )
+			{
+				case 'C':
+					xportfolio.xpbucket = 1;
+					break;
 
-			printf ( "purchase date, yyyy-mm-dd " );
+				case 'F':
+					xportfolio.xpbucket = 2;
+					break;
+
+				case 'E':
+					xportfolio.xpbucket = 3;
+					break;
+
+			}
+
+
+			printf ( "broker account " );
+			fflush ( stdout );
+			strBroker[0] = '\0';
+			while ( strBroker[0] == '\0' )
+			{
+				fgets ( strBroker, sizeof(strBroker), stdin );
+				TrimRightAndLeft ( strBroker );
+			}
+
+			sprintf ( WhereClause, "Pmember = %ld and Pbroker = '%s'", xmember.xid, strBroker );
+			if ( dbySelectCount ( &MySql, "portfolio", WhereClause, LogFileName ) == 0 )
+			{
+				printf ( "WARNING: UNKNOWN BROKER ACCOUNT\n" );
+				printf ( "WhereClause: [%s]\n", WhereClause );
+			}
+
+			printf ( "purchase date [yyyy-mm-dd] " );
+			fflush ( stdout );
 
 			memset ( strPurchaseDate, 'x', sizeof(strPurchaseDate) );
 			while ( StrToDatevalFmt ( strPurchaseDate, DATEFMT_YYYY_MM_DD, &dvPurchaseDate ) != 0 )
@@ -179,6 +227,7 @@ if ( strcmp ( tokens[TOK_SYMBOL], "WBA" ) ==  0 )
 			if ( xstock.xstype[0] == STYPE_BOND )
 			{
 				printf ( "maturity date [yyyy-mm-dd] " );
+				fflush ( stdout );
 
 				memset ( strMaturityDate, 'x', sizeof(strMaturityDate) );
 				while ( StrToDatevalFmt ( strMaturityDate, DATEFMT_YYYY_MM_DD, &dvMaturityDate ) != 0 )
@@ -188,23 +237,29 @@ if ( strcmp ( tokens[TOK_SYMBOL], "WBA" ) ==  0 )
 				}
 
 				sprintf ( Statement,
-"insert into portfolio ( Pmember, Pticker, Pdate, Pshares, Pprice, Pbenchmark, Palerttype, Poptexp ) values ( %ld, '%s', '%s', %f, %f, 'SPY', 'N', '%s' )",
+"insert into portfolio ( Pmember, Pticker, Pdate, Pshares, Pprice, Pbenchmark, Palerttype, Poptexp, Pbroker, Pbucket ) \
+ values ( %ld, '%s', '%s', %f, %f, 'SPY', 'N', '%s', '%s', %d )",
 						xmember.xid,
 						tokens[TOK_SYMBOL],
 						strPurchaseDate,
 						FilePortfolio.xpshares,
 						FilePortfolio.xpprice,
-						strMaturityDate );
+						strMaturityDate,
+						strBroker,
+						xportfolio.xpbucket );
 			}
 			else
 			{
 				sprintf ( Statement,
-"insert into portfolio ( Pmember, Pticker, Pdate, Pshares, Pprice, Pbenchmark, Palerttype ) values ( %ld, '%s', '%s', %f, %f, 'SPY', 'N' )",
+"insert into portfolio ( Pmember, Pticker, Pdate, Pshares, Pprice, Pbenchmark, Palerttype, Pbroker, Pbucket ) \
+ values ( %ld, '%s', '%s', %f, %f, 'SPY', 'N', '%s', %d )",
 						xmember.xid,
 						tokens[TOK_SYMBOL],
 						strPurchaseDate,
 						FilePortfolio.xpshares,
-						FilePortfolio.xpprice );
+						FilePortfolio.xpprice,
+						strBroker,
+						xportfolio.xpbucket );
 			}
 
 // printf ( "%s\n", Statement );
@@ -247,6 +302,7 @@ if ( strcmp ( tokens[TOK_SYMBOL], "WBA" ) ==  0 )
 			printf ( "  SHARES PORTFOLIO %.4f != FILE %.4f\n", xportfolio.xpshares, FilePortfolio.xpshares );
 
 			printf ( "  Do you want to fix share count? [Y/N] " );
+			fflush ( stdout );
 			ans = GetValidChar ( "YN" );
 			if ( ans == 'Y' )
 			{
@@ -269,8 +325,13 @@ if ( strcmp ( tokens[TOK_SYMBOL], "WBA" ) ==  0 )
 			printf ( "%s %s\n", tokens[TOK_SYMBOL], tokens[TOK_DESC] );
 			printf ( "  COST/SHARE PORTFOLIO %.4f != FILE %.4f\n", xportfolio.xpprice, FilePortfolio.xpprice );
 
+#ifdef PROMPT_COST_BASIS
 			printf ( "  Do you want to fix cost basis? [Y/N] " );
+			fflush ( stdout );
 			ans = GetValidChar ( "YN" );
+#else
+			ans = 'Y';
+#endif
 			if ( ans == 'Y' )
 			{
 				sprintf ( Statement,
@@ -287,7 +348,7 @@ if ( strcmp ( tokens[TOK_SYMBOL], "WBA" ) ==  0 )
 			}
 		}
 
-		if ( xstock.xstype[0] == 'B' )
+		if ( xstock.xstype[0] == STYPE_BOND ) // if ( xstock.xstype[0] == 'B' )
 		{
 			BondValueFile      += nsAtof(tokens[TOK_CURR]) ;
 			BondValuePortfolio += xportfolio.xpshares * 1000.0;
